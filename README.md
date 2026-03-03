@@ -76,4 +76,4 @@ python main.py
 
 ## Purpose
 
-Built as part of my long-term focus on systems engineering and architectural discipline.
+Built as part of my long-term focus on learning software system engineering and architectural design.
