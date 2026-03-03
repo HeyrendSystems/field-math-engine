@@ -1,22 +1,16 @@
 # Field Math Engine
 
-A Python-based field calculator built with clean structure and room to grow.
+A structured Python calculator for practical field computations.
 
-This started as a simple area calculator, but it’s being built intentionally as a modular system so it can expand into other technical domains like electrical and hydraulics.
-
----
-
-## Overview
-
-Field Math Engine is structured as a Python package rather than a standalone script.
+This repository documents the lifecycle of the project, beginning as a simple area calculator and evolving into a broader field computation engine across multiple technical domains.
 
 Right now it includes:
 
 - A geometry domain
-- An area calculation workflow
-- A clean separation between the entrypoint and calculation logic
+- An area and volume calculation workflow
+- A clean separation between application entry point and calculation logic
 
-The system is organized so adding new domains does not require restructuring the core. The long-term goal is to support CLI arguments and eventually expand into web or mobile interfaces.
+The goal is to structure the system so that adding new domains does not require restructuring the core. Long term, the project aims to support CLI arguments and eventually expand into web or mobile interfaces.
 
 ---
 
