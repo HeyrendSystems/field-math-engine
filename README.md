@@ -50,10 +50,10 @@ This separation enables:
 
 ## Running the Application
 
-From the project root:
+From the project root in your terminal:
 
 ```bash
-python main.py
+python3 main.py
 ```
 
 ---
