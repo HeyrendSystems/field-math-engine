@@ -1,16 +1,28 @@
 from field_math_engine.constants import (
+    FEET_CUBED,
     FEET_SQUARED,
+    FOOT_CUBED,
     FOOT_SQUARED,
+    INCHES_CUBED,
     INCHES_SQUARED,
     ONE_FOOT,
 )
 
-def convert_area_output(unit,area_ft_sq):
+def convert_inches_squared(unit, value):
     if unit == FEET_SQUARED:
-        return area_ft_sq
+        return value
     elif unit == INCHES_SQUARED:
-        area_ft_sq = area_ft_sq * FOOT_SQUARED
-        return area_ft_sq
+        value = value * FOOT_SQUARED
+        return value
+    else:
+        raise ValueError("Invalid unit")
+
+def convert_inches_cubed(unit, value):
+    if unit == FEET_CUBED:
+        return value
+    elif unit == INCHES_CUBED:
+        value = value * FOOT_CUBED
+        return value
     else:
         raise ValueError("Invalid unit")
 
@@ -24,14 +36,9 @@ def inches_to_feet(value, unit):
     else:
         raise ValueError("Invalid unit")
 
-def final_unit_choice():
-    unit = input("Output units [1=ft², 2=in²]: ").strip()
-    if unit == "1":
-        return FEET_SQUARED
-    elif unit == "2":
-        return INCHES_SQUARED
-    else:
-        raise ValueError("Invalid unit")
+def final_unit_choice(unit):
+    pass # currently final unit choice is choosen in calulator engines
 
-def final_calc_value(area_ft_sq, unit):  # Output final value in correct units
-    print(f"{area_ft_sq:g} {unit}")
+
+def final_calc_value(value, unit):  # Output final value in correct units
+    print(f"{value:g} {unit}")

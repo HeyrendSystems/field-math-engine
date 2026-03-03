@@ -1,8 +1,10 @@
 import math
+from ..constants import DIAMETER_SQUARED_DIVISOR, FEET_SQUARED, INCHES_SQUARED
 from field_math_engine.geometry.input_helpers import get_object_measurement
-from field_math_engine.unit_helpers import inches_to_feet
-from ..constants import (
-    DIAMETER_SQUARED_DIVISOR,
+from field_math_engine.unit_helpers import (
+    inches_to_feet,
+    final_calc_value,
+    convert_inches_squared,
 )
 
 def area_rectangle():
@@ -45,4 +47,33 @@ def area_eclipse():
     area_ft_sq = (math.pi * semi_major_axis_ft * semi_minor_axis_ft)
     return area_ft_sq
 
+def area_formula_choice():  # Handle area formula selection
+    formula = int(input("Area Calculation type [1=Rectangle, 2=Circle, 3 = Trapizoid, 4 = Trianlge, 5 = Eclipse]: ").strip())
+    if formula in EQUATIONS:
+        return EQUATIONS[formula]()
+    else:
+        raise ValueError("Invalid formula choice")
 
+def run_area_calculator():
+    area_ft_sq = area_formula_choice()
+    unit = area_unit_choice()
+    final_area = convert_inches_squared(unit, area_ft_sq)
+    final_calc_value(final_area, unit)
+
+def area_unit_choice():
+    unit = input("Output units [1=ft², 2=in²]: ").strip()
+    if unit == "1":
+        return FEET_SQUARED
+    elif unit == "2":
+        return INCHES_SQUARED
+    else:
+        raise ValueError("Invalid unit")
+
+
+EQUATIONS = {
+    1 : area_rectangle,
+    2 : area_circle,
+    3 : area_trapezoid,
+    4: area_triangle,
+    5: area_eclipse,
+    }

@@ -1,8 +1,12 @@
-from field_math_engine.geometry import EQUATIONS
+from field_math_engine.geometry.area import run_area_calculator
+from field_math_engine.geometry.volume import run_volume_calc
 
-def formula_choice():  # Handle formula selection
-    formula = int(input("Area Calculation type [1=Rectangle, 2=Circle, 3 = Trapizoid, 4 = Trianlge, 5 = Eclipse]: ").strip())
-    if formula in EQUATIONS:
-        return EQUATIONS[formula]()
-    else:
-        raise ValueError("Invalid formula choice")
+def calculator_choice():
+    command = input("Calculator [type: area or volume]: ").lower().strip()
+    match command:
+        case "area":
+            run_area_calculator()
+        case "volume":
+            run_volume_calc()
+        case _:
+            print("Invalid option")
