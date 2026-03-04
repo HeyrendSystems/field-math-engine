@@ -8,6 +8,10 @@ from field_math_engine.constants import (
     ONE_FOOT,
 )
 
+def validate_measurement(value, measurement_type="value"):  # implement in calc functions, maybe change to ValueError for negitive input
+    if value <= 0:
+        raise ValueError(f"{measurement_type} cannot be negative.")
+
 def convert_inches_squared(unit, value):
     if unit == FEET_SQUARED:
         return value
@@ -40,5 +44,5 @@ def final_unit_choice(unit):
     pass # currently final unit choice is choosen in calulator engines
 
 
-def final_calc_value(value, unit):  # Output final value in correct units
+def final_calc_value(value=None, unit=None):  # Output final value in correct units
     print(f"{value:g} {unit}")

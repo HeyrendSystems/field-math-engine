@@ -47,8 +47,22 @@ def area_eclipse():
     area_ft_sq = (math.pi * semi_major_axis_ft * semi_minor_axis_ft)
     return area_ft_sq
 
+def area_annulus():
+    outside_diameter, outside_diameter_unit = get_object_measurement("Outside Diameter")
+    inside_diameter, inside_diameter_unit = get_object_measurement("Inside Diameter")
+    outside_diameter_ft =inches_to_feet(outside_diameter, outside_diameter_unit)
+    inside_diameter_ft = inches_to_feet(inside_diameter, inside_diameter_unit)
+    if outside_diameter_ft < inside_diameter_ft:
+        raise ValueError("Outside diameter cannot be less than inside diameter.")
+    else:
+        area_ft_sq = (
+            (math.pi/ DIAMETER_SQUARED_DIVISOR)
+            * (outside_diameter_ft ** 2 - inside_diameter_ft ** 2)
+            )
+    return area_ft_sq
+
 def area_formula_choice():  # Handle area formula selection
-    formula = int(input("Area Calculation type [1=Rectangle, 2=Circle, 3 = Trapizoid, 4 = Trianlge, 5 = Eclipse]: ").strip())
+    formula = int(input("Area Calculation type [1=Rectangle, 2=Circle, 3 = Trapizoid, 4 = Trianlge, 5 = Eclipse, 6=Annulus]: ").strip())
     if formula in EQUATIONS:
         return EQUATIONS[formula]()
     else:
@@ -71,9 +85,10 @@ def area_unit_choice():
 
 
 EQUATIONS = {
-    1 : area_rectangle,
-    2 : area_circle,
-    3 : area_trapezoid,
+    1: area_rectangle,
+    2: area_circle,
+    3: area_trapezoid,
     4: area_triangle,
     5: area_eclipse,
+    6: area_annulus
     }
