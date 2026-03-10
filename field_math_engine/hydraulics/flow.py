@@ -26,32 +26,22 @@ def flow_unit_choice(flow):
         case "1":
             unit = "ft³/s"
             value = flow
-            return value, unit
         case "2":
             unit = "GPS"
             value = flow * GALLON_PER_SEC
-            return value, unit
         case "3":
             unit = "GPM"
             value = flow * GALLON_PER_MIN
-            return value, unit
         case "4":
             unit = "GPH"
             value = flow * GALLON_PER_HOUR
         case "5":
             unit = "GPD"
             value = flow * GALLON_PER_DAY
-            return value, unit
+    return value, unit
 
 def print_flow(value, unit):
     print(f"This is the flow {value} {unit}")
-
-def get_number_format(value):
-    value = f"{value:,.2f}"
-    return value
-
-
-
 
 def run_flow_calculator():
     flow = flow_rate()

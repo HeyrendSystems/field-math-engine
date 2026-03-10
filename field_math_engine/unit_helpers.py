@@ -44,7 +44,7 @@ def final_unit_choice(unit):
     pass # currently final unit choice is choosen in calulator engines
 
 def get_number_format(value):
-    value = f"{value:,.2f}"
+    value = f"{value:,.7g}"
     return value
 
 def final_calc_value(value=None, unit=None):  # Output final value in correct units
