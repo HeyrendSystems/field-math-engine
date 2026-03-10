@@ -4,13 +4,30 @@ A structured Python calculator for practical field computations.
 
 This repository documents the lifecycle of the project, beginning as a simple area calculator and evolving into a broader field computation engine across multiple technical domains.
 
-Right now it includes:
+## Current Architecture
 
-- A geometry domain
-- An area and volume calculation workflow
-- A clean separation between application entry point and calculation logic
+```
+ Application Entry Point
+        │
+        ▼
+     main.py
+        │
+        ▼
+   CLI Interface
+        │
+        ▼
+Calculation Engine Layer
+        │
+ ┌──────┴─────────┐
+ │                │
+ ▼                ▼
+Geometry Domain   Hydraulics Domain
+ │                │
+ ├─ Area Engine   ├─ Flow Engine
+ └─ Volume Engine └─ Velocity Engine
+```
 
-The goal is to structure the system so that adding new domains does not require restructuring the core. Long term, the project aims to support CLI arguments and eventually expand into web or mobile interfaces.
+The system is designed so that new computational domains can be added without modifying the core architecture. Long term, the project aims to support CLI arguments and eventually expand into web or mobile interfaces.
 
 ---
 
@@ -20,9 +37,19 @@ field-math-engine/
 │
 ├── field_math_engine/
 │   ├── __init__.py
-│   └── geometry/
-│       ├── __init__.py
-│       └── area_calculator.py
+│   ├── cli.py
+│   ├── constants.py
+│   ├── unit_helpers.py
+│   │
+│   ├── geometry/
+│   │   ├── __init__.py
+│   │   ├── area.py
+│   │   ├── volume.py
+│   │   └── input_helpers.py
+│   │
+│   └── hydraulics/
+│       ├── flow.py
+│       └── velocity.py
 │
 ├── main.py
 ├── LICENSE
@@ -36,8 +63,8 @@ field-math-engine/
 The system is structured around domain ownership:
 
 - `main.py` serves as the application entrypoint.
-- Domain modules (e.g., geometry) encapsulate their own workflows.
-- Internal calculation logic is isolated from execution logic.
+- The CLI layer handles user interaction and command flow.
+- Domain modules encapsulate their own calculation logic.
 
 This separation enables:
 
@@ -62,7 +89,7 @@ python3 main.py
 
 - Add argparse support for CLI arguments
 - Expand supported formulas
-- Introduce additional technical domains (electrical, hydraulics)
+- Introduce additional domains (electrical, thermodynamics, etc.)
 - Expand unit conversion support
 - Add test coverage
 
@@ -70,4 +97,4 @@ python3 main.py
 
 ## Purpose
 
-Built as part of my long-term focus on learning software system engineering and architectural design.
+This project is part of my long-term focus on learning software system engineering and architectural design.
