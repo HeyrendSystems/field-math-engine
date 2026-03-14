@@ -5,9 +5,6 @@ from field_math_engine.constants import (
     GALLON_PER_HOUR,
 )
 
-from field_math_engine.geometry.area import (
-    area_formula_choice,
-)
 from field_math_engine.unit_helpers import get_number_format
 
 def get_velocity(prompt):

@@ -1,4 +1,4 @@
-from field_math_engine.geometry.area import area_formula_choice
+
 from field_math_engine.unit_helpers import get_number_format
 from field_math_engine.constants import (
     FOOT_TO_METER,
