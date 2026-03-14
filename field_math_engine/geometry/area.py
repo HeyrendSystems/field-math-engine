@@ -5,7 +5,7 @@ def area_rectangle(length_ft, width_ft):
     area_ft_sq = length_ft * width_ft
     return area_ft_sq
 
-def area_circle(diameter_ft):
+def area_circle(diameter_ft,):
     area_ft_sq = (math.pi / DIAMETER_SQUARED_DIVISOR) * diameter_ft ** 2
     return area_ft_sq
 
@@ -33,7 +33,7 @@ def area_annulus(outside_diameter_ft, inside_diameter_ft):
 
 
 
-EQUATIONS = {
+AREA_EQUATIONS = {
     1: area_rectangle,
     2: area_circle,
     3: area_trapezoid,
