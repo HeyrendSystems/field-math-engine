@@ -7,24 +7,27 @@ This repository documents the lifecycle of the project, beginning as a simple ar
 ## Current Architecture
 
 ```
- Application Entry Point
+Application Entry Point
         │
         ▼
-     main.py
+      main.py
         │
         ▼
-   CLI Interface
+    CLI Interface
+      (cli.py)
         │
         ▼
-Calculation Engine Layer
+   Calculation Layer
         │
- ┌──────┴─────────┐
- │                │
- ▼                ▼
-Geometry Domain   Hydraulics Domain
- │                │
- ├─ Area Engine   ├─ Flow Engine
- └─ Volume Engine └─ Velocity Engine
+ ┌──────┴───────────────┐
+ │                      │
+ ▼                      ▼
+Geometry Domain     Hydraulics Domain
+ │                      │
+ ├─ Area                ├─ Flow
+ └─ Volume              ├─ Velocity
+                        ├─ Total Dynamic Head (TDH)
+                        └─ Pump Horsepower
 ```
 
 The system is designed so that new computational domains can be added without modifying the core architecture. Long term, the project aims to support CLI arguments and eventually expand into web or mobile interfaces.
@@ -35,23 +38,26 @@ The system is designed so that new computational domains can be added without mo
 ```text
 field-math-engine/
 │
+├── main.py
+│
 ├── field_math_engine/
 │   ├── __init__.py
 │   ├── cli.py
 │   ├── constants.py
 │   ├── unit_helpers.py
-│   │
+│
 │   ├── geometry/
 │   │   ├── __init__.py
 │   │   ├── area.py
 │   │   ├── volume.py
 │   │   └── input_helpers.py
-│   │
+│
 │   └── hydraulics/
 │       ├── flow.py
+│       ├── pump_horsepower.py
+│       ├── tdh.py
 │       └── velocity.py
 │
-├── main.py
 ├── LICENSE
 └── README.md
 ```
