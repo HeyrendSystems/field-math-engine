@@ -1,26 +1,32 @@
 from field_math_engine.geometry.area import AREA_EQUATIONS
 from field_math_engine.geometry.volume import VOLUME_EQUATIONS
+from field_math_engine.geometry.input_helpers import get_object_measurement, get_psi_measurement, pressure_head
 from field_math_engine.hydraulics.flow import flow_rate
 from field_math_engine.hydraulics.veloctiy import velocity_rate
-from field_math_engine.geometry.input_helpers import get_object_measurement
+from field_math_engine.hydraulics.tdh import friction_head_loss, total_dynamic_head_calc
 from field_math_engine.unit_helpers import (
     inches_to_feet,
     convert_inches_squared,
     final_calc_value,
     get_number_format,
     convert_inches_cubed,
+    feet_to_inches,
 )
 from field_math_engine.constants import (
     FEET_SQUARED,
     FEET_CUBED,
     FOOT_TO_METER,
-    GALLON_PER_DAY,
-    GALLON_PER_HOUR,
-    GALLON_PER_MIN,
-    GALLON_PER_SEC,
+    CFS_TO_GPD,
+    CFS_TO_GPH,
+    CFS_TO_GPM,
+    CFS_TO_GPS,
     INCHES_CUBED,
     INCHES_SQUARED,
     ONE_FOOT,
+    SECONDS_IN_MINUTES,
+    MINUTES_IN_DAY,
+    MINUTES_IN_HOUR,
+    PSI_TO_FT_HEAD,
 )
 
 
@@ -191,16 +197,16 @@ def flow_unit_choice(flow):
             value = flow
         case "2":
             unit = "GPS"
-            value = flow * GALLON_PER_SEC
+            value = flow * CFS_TO_GPS
         case "3":
             unit = "GPM"
-            value = flow * GALLON_PER_MIN
+            value = flow * CFS_TO_GPM
         case "4":
             unit = "GPH"
-            value = flow * GALLON_PER_HOUR
+            value = flow * CFS_TO_GPH
         case "5":
             unit = "GPD"
-            value = flow * GALLON_PER_DAY
+            value = flow * CFS_TO_GPD
     return value, unit
 
 def print_flow(value, unit):
@@ -227,16 +233,16 @@ def convert_flow_to_cfs():
             flow = get_flow("Flow ft³/s")
         case "2":
             flow = get_flow("Flow GPS")
-            flow = flow / GALLON_PER_SEC
+            flow = flow / CFS_TO_GPS
         case "3":
             flow = get_flow("Flow GPM")
-            flow = flow / GALLON_PER_MIN
+            flow = flow / CFS_TO_GPM
         case "4":
             flow = get_flow("Flow GPH")
-            flow = flow / GALLON_PER_HOUR
+            flow = flow / CFS_TO_GPH
         case "5":
             flow = get_flow("Flow GPD")
-            flow = flow / GALLON_PER_DAY
+            flow = flow / CFS_TO_GPD
     return flow
 
 def final_velocity_unit(velocity):
@@ -261,10 +267,70 @@ def run_velocity_calculator():
     velocity = get_number_format(velocity)
     print(velocity,unit)
 
+# Total Dynamic Head Helpers
+def convert_flow_to_gpm():
+    command = input("Flow units [1=ft³/s, 2=GPS, 3=GPM, 4=GPH, 5=GPD]: ")
+    match command:
+        case "1":
+            flow = get_flow("Flow ft³/s")
+            flow = flow * CFS_TO_GPM
+        case "2":
+            flow = get_flow("Flow GPS")
+            flow = flow * SECONDS_IN_MINUTES
+        case "3":
+            flow = get_flow("Flow GPM")
+            flow = flow
+        case "4":
+            flow = get_flow("Flow GPH")
+            flow = flow / MINUTES_IN_HOUR
+        case "5":
+            flow = get_flow("Flow GPD")
+            flow = flow / MINUTES_IN_DAY
+    return flow
+
+def get_friction_measurements_inputs():
+    pipe_length, pipe_length_unit = get_object_measurement("Pipe Length")
+    pipe_length_ft = inches_to_feet(pipe_length, pipe_length_unit)
+    flow_rate_measurement = convert_flow_to_gpm()
+    pipe_roughness = float(input("Pipe roughness: "))
+    inside_diameter, inside_diameter_unit = get_object_measurement("Inside_diameter")
+    inside_diameter_inches = feet_to_inches(inside_diameter, inside_diameter_unit)
+    return pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter_inches
+
+def get_static_water_level_inputsl():
+    static_water_level, static_water_level_unit = get_object_measurement("Static water level")
+    static_water_level_ft = inches_to_feet(static_water_level, static_water_level_unit)
+    return static_water_level_ft
+
+def get_hydraulic_grade_line_inputs():
+    destination_elevation, destination_elevation_unit = get_object_measurement("Destination elevation")
+    destination_elevation_ft = inches_to_feet(destination_elevation, destination_elevation_unit)
+    required_psi = get_psi_measurement("Required PSI")
+    pressure_head_ft = pressure_head(required_psi)
+    return destination_elevation_ft, pressure_head_ft
+
+
+
+# Run TDH calc
+def run_tdh_calculator():
+    pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter = get_friction_measurements_inputs()
+    friction_loss_ft = friction_head_loss(pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter)
+    friction_psi = friction_loss_ft / PSI_TO_FT_HEAD
+    print(f"Friction head loss: {friction_loss_ft}")
+    print(f"Pressure loss: {friction_psi}")
+    static_water_level_ft = get_static_water_level_inputsl()
+    destination_elevation_ft, pressure_head_ft = get_hydraulic_grade_line_inputs()
+    print(pressure_head_ft)
+    tdh = total_dynamic_head_calc(static_water_level_ft, destination_elevation_ft, pressure_head_ft, friction_loss_ft)
+    return tdh
+
+
+
+
 
 # Calculator choice
 def calculator_choice():
-    command = input("Calculator [type: area, volume, flow, or velocity]: ").lower().strip()
+    command = input("Calculator [type: area, volume, flow, velocity, TDH]: ").lower().strip()
     match command:
         case "area":
             run_area_calculator()
@@ -274,5 +340,7 @@ def calculator_choice():
             run_flow_calculator()
         case "velocity":
             run_velocity_calculator()
+        case "tdh":
+            run_tdh_calculator()
         case _:
             print("Invalid option")

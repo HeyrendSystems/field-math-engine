@@ -40,6 +40,17 @@ def inches_to_feet(value, unit):
     else:
         raise ValueError("Invalid unit")
 
+def feet_to_inches(value, unit):
+    unit = unit.strip().lower()
+    if unit in ("inches", "inch" ,"in"):
+        return value
+    elif unit in ("feet", "foot" ,"ft"):
+        value = value * ONE_FOOT
+        return value
+    else:
+        raise ValueError("Invalid unit")
+
+
 def final_unit_choice(unit):
     pass # currently final unit choice is choosen in calulator engines
 
