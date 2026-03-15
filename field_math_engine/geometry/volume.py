@@ -22,11 +22,11 @@ def volume_cylinder(diameter_ft, height_ft):
     volume_cb_ft = area_sq_ft * height_ft
     return volume_cb_ft
 
-def volume_annulus(outside_diameter_ft, inside_diameter_ft, height_ft):
+def volume_annulus(outside_diameter_ft, inside_diameter_ft, length_ft):
     volume_cb_ft = (
         (math.pi/ DIAMETER_SQUARED_DIVISOR)
         * (outside_diameter_ft ** 2 - inside_diameter_ft ** 2)
-        * height_ft
+        * length_ft
     )
     return volume_cb_ft
 

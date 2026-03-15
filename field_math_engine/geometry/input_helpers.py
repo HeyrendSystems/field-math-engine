@@ -12,3 +12,5 @@ def get_psi_measurement(prompt):
 def pressure_head(psi_value):
     return psi_value * PSI_TO_FT_HEAD
 
+def psi(pressure_head_value):
+    return pressure_head_value / PSI_TO_FT_HEAD

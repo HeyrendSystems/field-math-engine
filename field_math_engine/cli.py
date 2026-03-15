@@ -9,7 +9,6 @@ from field_math_engine.unit_helpers import (
     inches_to_feet,
     convert_inches_squared,
     final_calc_value,
-    get_number_format,
     convert_inches_cubed,
     feet_to_inches,
 )
@@ -34,8 +33,29 @@ from field_math_engine.constants import (
 
 # AREA CLI HELPERS
 
-def area_formula_choice():  # Handle area formula selection
-    formula = int(input("Area Calculation type [1=Rectangle, 2=Circle, 3 = Trapizoid, 4 = Trianlge, 5 = Eclipse, 6=Annulus]: ").strip())
+def area_formula_choice(mode=1):  # Handle area formula selection for area and flow calcs
+
+    if mode == 1:
+        header_title = "Area Calculation Type"
+    elif mode == 2:
+        header_title = "Shape for Flow Area"
+    elif mode == 3:
+        header_title = "Shape for Velocity Area"
+
+    print(f"""
+================================
+    {header_title}
+================================
+
+1. Rectangle
+2. Circle
+3. Trapizoid
+4. Triangle
+5. Ellipse
+6. Annulus
+""")
+    formula = int(input("Choose Formula: "))
+
     if formula in AREA_INPUTS:
         return AREA_EQUATIONS[formula](*AREA_INPUTS[formula]()) # unpack function if needed
     else:
@@ -104,14 +124,26 @@ AREA_INPUTS = {
 
 # Run area calc
 def run_area_calculator():
-    area_ft_sq = area_formula_choice()
+    area_ft_sq = area_formula_choice(mode=1)
     unit = area_unit_choice()
     final_area = convert_inches_squared(unit, area_ft_sq)
     final_calc_value(final_area, unit)
 
 # Volume CLI helpers
 def volume_formula_choice():  # Handle area formula selection
-    formula = int(input("Volume Calculation type [1=Rectangle, 2=Cube, 3=Sphere, 4=Hemisphere, 5=Cylinder, 6=Annular(Pipe)]: ").strip())
+    print("""
+================================
+    Volume Calculation type
+================================
+
+1. Rectangular Prism
+2. Cube
+3. Sphere
+4. HemiSphere
+5. Cylinder
+6. Annular (pipe)
+""")
+    formula = int(input("Choose Formula:  "))
     if formula in VOLUME_INPUTS:
         return VOLUME_EQUATIONS[formula](*VOLUME_INPUTS[formula]()) # unpack function if needed
     else:
@@ -163,10 +195,10 @@ def volume_annulus_input():
     if outside_diameter_ft < inside_diameter_ft:
         raise ValueError("Outside diameter cannot be less than inside diameter.")
     else:
-        height, height_unit = get_object_measurement("Height")
-        height_ft = inches_to_feet(height, height_unit)
+        length, length_unit = get_object_measurement("Length")
+        length_ft = inches_to_feet(length, length_unit)
 
-    return outside_diameter_ft, inside_diameter_ft, height_ft
+    return outside_diameter_ft, inside_diameter_ft, length_ft
 
 def run_volume_calc():
     volume_cb_ft = volume_formula_choice()
@@ -216,12 +248,11 @@ def print_flow(value, unit):
 
 # Run flow calc
 def run_flow_calculator():
-    area_of_shape = area_formula_choice()
+    area_of_shape = area_formula_choice(mode=2)
     velocity = get_velocity("Velocity")
     flow = flow_rate(area_of_shape, velocity)
     value, unit = flow_unit_choice(flow)
-    value = get_number_format(value)
-    print_flow(value, unit)
+    final_calc_value(value, unit)
 
 # Velocity CLI helpers
 def get_flow(prompt):
@@ -262,12 +293,11 @@ def final_velocity_unit(velocity):
 
 # Run veolcity calc
 def run_velocity_calculator():
-    area_of_shape = area_formula_choice()
+    area_of_shape = area_formula_choice(mode=3)
     flow =  convert_flow_to_cfs()
     velocity = velocity_rate(flow, area_of_shape)
     velocity, unit = final_velocity_unit(velocity)
-    velocity = get_number_format(velocity)
-    print(velocity,unit)
+    final_calc_value(velocity,unit)
 
 # Total Dynamic Head and Pump Horsepower Helpers
 def convert_flow_to_gpm():
@@ -312,7 +342,9 @@ def get_hydraulic_grade_line_inputs():
     return destination_elevation_ft, pressure_head_ft
 
 def get_pump_effcieny():
-    pump_effcieny = float(input("Pump effcieny: ").strip())
+    pump_effcieny = float(input("Pump efficiency: ").strip())
+    if pump_effcieny > 1:
+        pump_effcieny = pump_effcieny / 100
     return pump_effcieny
 
 
@@ -320,30 +352,48 @@ def get_pump_effcieny():
 # Run TDH and Pump Horsepower calc
 flow_rate_number = []
 
-def run_tdh_calculator():
+def run_tdh_calculator(mode=1):
+    if mode == 1:
+        print("""
+================================
+    Total Dynamic head
+================================
+""")
+    elif mode == 2:
+        pass
     pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter = get_friction_measurements_inputs()
     flow_rate_number.append(flow_rate_measurement)
     friction_loss_ft = friction_head_loss(pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter)
-    friction_psi = friction_loss_ft / PSI_TO_FT_HEAD
-    print(f"Friction head loss: {friction_loss_ft}")
-    print(f"Pressure loss: {friction_psi}")
     static_water_level_ft = get_static_water_level_inputsl()
     destination_elevation_ft, pressure_head_ft = get_hydraulic_grade_line_inputs()
-    print(pressure_head_ft)
-    tdh = total_dynamic_head_calc(static_water_level_ft, destination_elevation_ft, pressure_head_ft, friction_loss_ft)
-    return tdh
+    total_dynamic_head, friction_loss_ft, friction_psi = total_dynamic_head_calc(static_water_level_ft, destination_elevation_ft, pressure_head_ft, friction_loss_ft)
+    print(f"""
+Total dynamic head: {total_dynamic_head:,.7g}
+Friction head loss: {friction_loss_ft:,.7g}
+Pressure loss: {friction_psi:,.7g}
+""")
 
 def run_pump_hp_calculator():
-    total_dynamic_head = run_tdh_calculator()
-    flow = flow_rate_number[0]
+    print("""
+================================
+      Pump Horseower
+================================
+""")
+    user_has_tdh = input("Do you alread know your Total Dynamic Head? (y/n): ").lower().strip()
+    if user_has_tdh == "y":
+        total_dynamic_head = int(input("Enter Total Dynamic Head: "))
+        flow = convert_flow_to_gpm()
+    else:
+        total_dynamic_head = run_tdh_calculator(mode=2)
+        flow = flow_rate_number[0]
     pump_effcieny = get_pump_effcieny()
     shaft_hp = pump_horsepower(flow, total_dynamic_head, pump_effcieny)
     shaft_kw = shaft_hp * KW_PER_HP
     hydraulic_hp = shaft_hp * pump_effcieny
     hydraulic_kw = hydraulic_hp * KW_PER_HP
 
-    print(f"Shaft Power: {shaft_hp} (hp), {shaft_kw} (kW)")
-    print(f"Hydraulic Power: {hydraulic_hp} (hp), {hydraulic_kw} (kW)")
+    print(f"Shaft Power: {shaft_hp:,.7g} (hp), {shaft_kw:,.7g} (kW)")
+    print(f"Hydraulic Power: {hydraulic_hp:,.7g} (hp), {hydraulic_kw:,.7g} (kW)")
 
 
 
@@ -353,19 +403,31 @@ def run_pump_hp_calculator():
 
 # Calculator choice
 def calculator_choice():
-    command = input("Calculator [type: area, volume, flow, velocity, TDH, Pump HP]: ").lower().strip()
+    print("""
+================================
+       Calculator Choice
+================================
+
+1. Area
+2. Volume
+3. Flow
+4. Velocity
+5. Total Dynamic Head
+6. Pump Horsepower (returns hp and kW)
+""")
+    command = int(input("Choose Calculator: "))
     match command:
-        case "area":
+        case 1:
             run_area_calculator()
-        case "volume":
+        case 2:
             run_volume_calc()
-        case "flow":
+        case 3:
             run_flow_calculator()
-        case "velocity":
+        case 4:
             run_velocity_calculator()
-        case "tdh":
+        case 5:
             run_tdh_calculator()
-        case "pump hp":
+        case 6:
             run_pump_hp_calculator()
         case _:
-            print("Invalid option")
+            raise ValueError("Invalid option")
