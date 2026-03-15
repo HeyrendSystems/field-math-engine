@@ -2,7 +2,8 @@ from field_math_engine.geometry.area import AREA_EQUATIONS
 from field_math_engine.geometry.volume import VOLUME_EQUATIONS
 from field_math_engine.geometry.input_helpers import get_object_measurement, get_psi_measurement, pressure_head
 from field_math_engine.hydraulics.flow import flow_rate
-from field_math_engine.hydraulics.veloctiy import velocity_rate
+from field_math_engine.hydraulics.velocity import velocity_rate
+from field_math_engine.hydraulics.pump_horsepower import pump_horsepower
 from field_math_engine.hydraulics.tdh import friction_head_loss, total_dynamic_head_calc
 from field_math_engine.unit_helpers import (
     inches_to_feet,
@@ -22,6 +23,7 @@ from field_math_engine.constants import (
     CFS_TO_GPS,
     INCHES_CUBED,
     INCHES_SQUARED,
+    KW_PER_HP,
     ONE_FOOT,
     SECONDS_IN_MINUTES,
     MINUTES_IN_DAY,
@@ -267,7 +269,7 @@ def run_velocity_calculator():
     velocity = get_number_format(velocity)
     print(velocity,unit)
 
-# Total Dynamic Head Helpers
+# Total Dynamic Head and Pump Horsepower Helpers
 def convert_flow_to_gpm():
     command = input("Flow units [1=ft³/s, 2=GPS, 3=GPM, 4=GPH, 5=GPD]: ")
     match command:
@@ -309,11 +311,18 @@ def get_hydraulic_grade_line_inputs():
     pressure_head_ft = pressure_head(required_psi)
     return destination_elevation_ft, pressure_head_ft
 
+def get_pump_effcieny():
+    pump_effcieny = float(input("Pump effcieny: ").strip())
+    return pump_effcieny
 
 
-# Run TDH calc
+
+# Run TDH and Pump Horsepower calc
+flow_rate_number = []
+
 def run_tdh_calculator():
     pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter = get_friction_measurements_inputs()
+    flow_rate_number.append(flow_rate_measurement)
     friction_loss_ft = friction_head_loss(pipe_length_ft, flow_rate_measurement, pipe_roughness, inside_diameter)
     friction_psi = friction_loss_ft / PSI_TO_FT_HEAD
     print(f"Friction head loss: {friction_loss_ft}")
@@ -324,13 +333,27 @@ def run_tdh_calculator():
     tdh = total_dynamic_head_calc(static_water_level_ft, destination_elevation_ft, pressure_head_ft, friction_loss_ft)
     return tdh
 
+def run_pump_hp_calculator():
+    total_dynamic_head = run_tdh_calculator()
+    flow = flow_rate_number[0]
+    pump_effcieny = get_pump_effcieny()
+    shaft_hp = pump_horsepower(flow, total_dynamic_head, pump_effcieny)
+    shaft_kw = shaft_hp * KW_PER_HP
+    hydraulic_hp = shaft_hp * pump_effcieny
+    hydraulic_kw = hydraulic_hp * KW_PER_HP
+
+    print(f"Shaft Power: {shaft_hp} (hp), {shaft_kw} (kW)")
+    print(f"Hydraulic Power: {hydraulic_hp} (hp), {hydraulic_kw} (kW)")
+
+
+
 
 
 
 
 # Calculator choice
 def calculator_choice():
-    command = input("Calculator [type: area, volume, flow, velocity, TDH]: ").lower().strip()
+    command = input("Calculator [type: area, volume, flow, velocity, TDH, Pump HP]: ").lower().strip()
     match command:
         case "area":
             run_area_calculator()
@@ -342,5 +365,7 @@ def calculator_choice():
             run_velocity_calculator()
         case "tdh":
             run_tdh_calculator()
+        case "pump hp":
+            run_pump_hp_calculator()
         case _:
             print("Invalid option")
