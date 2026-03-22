@@ -53,9 +53,9 @@ The system is designed so that new computational domains can be added without mo
 
 The system is structured around domain ownership and interface abstraction:
 
-- Desktop CLI: Handles sequential user interaction and command flow in a terminal environment.
-- Embedded Pico: Implements a manual State Machine within the pico_calculator module to manage keypad polling, numeric buffering, and real-time OLED rendering for handheld use.
-- Domain Modules: Encapsulate pure calculation logic, independent of the user interface.
+- Desktop CLI handles sequential user interaction and command flow in a terminal environment. 
+- Embedded Pico implements a manual State Machine within the pico_calculator module to manage keypad polling, numeric buffering, and real-time OLED rendering for handheld use.
+- Domain Modules encapsulate pure calculation logic, independent of the user interface.
 
 This separation enables:
 
