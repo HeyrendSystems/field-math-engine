@@ -2,104 +2,90 @@
 
 A structured Python calculator for practical field computations.
 
-This repository documents the lifecycle of the project, beginning as a simple area calculator and evolving into a broader field computation engine across multiple technical domains.
+This repository documents the lifecycle of the project, beginning as a simple area calculator and evolving into a broader field computation engine across multiple technical domains. The system now supports dual-interface deployment, which includes a standard Command Line Interface (CLI) for desktop use and an embedded hardware interface for field use via Raspberry Pi Pico W. 
 
 ## Current Architecture
-
+```text
+       Desktop CLI                Pico Hardware
+        (main.py)                (pico_main.py)
+            │                          │
+            └────────────┬─────────────┘
+                         ▼
+                 Calculation Layer
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+          ▼                             ▼
+   Geometry Domain               Hydraulics Domain
+    (Area, Volume)          (Flow, TDH, HP, Velocity)
 ```
-Application Entry Point
-        │
-        ▼
-      main.py
-        │
-        ▼
-    CLI Interface
-      (cli.py)
-        │
-        ▼
-   Calculation Layer
-        │
- ┌──────┴───────────────┐
- │                      │
- ▼                      ▼
-Geometry Domain     Hydraulics Domain
- │                      │
- ├─ Area                ├─ Flow
- └─ Volume              ├─ Velocity
-                        ├─ Total Dynamic Head (TDH)
-                        └─ Pump Horsepower
-```
-
-The system is designed so that new computational domains can be added without modifying the core architecture. Long term, the project aims to support CLI arguments and eventually expand into web or mobile interfaces.
-
----
+The system is designed so that new computational domains can be added without modifying the core architecture. This separation enables the same logic engine to be driven by either terminal-based user input or physical hardware components like a 4x4 keypad and OLED display.
 
 ## Project Structure
+
 ```text
-field-math-engine/
-│
-├── main.py
-│
+.
 ├── field_math_engine/
-│   ├── __init__.py
 │   ├── cli.py
 │   ├── constants.py
 │   ├── unit_helpers.py
-│
 │   ├── geometry/
-│   │   ├── __init__.py
 │   │   ├── area.py
-│   │   ├── volume.py
-│   │   └── input_helpers.py
-│
+│   │   ├── input_helpers.py
+│   │   └── volume.py
 │   └── hydraulics/
 │       ├── flow.py
 │       ├── pump_horsepower.py
 │       ├── tdh.py
 │       └── velocity.py
-│
+├── pico_calculator/
+│   ├── keypad_input.py
+│   ├── main_menu.py
+│   ├── oled_display.py
+│   ├── pico_area.py
+│   └── sh1106.py
+├── main.py
+├── pico_main.py
 ├── LICENSE
 └── README.md
 ```
-
----
-
 ## Architecture Philosophy
 
-The system is structured around domain ownership:
+The system is structured around domain ownership and interface abstraction:
 
-- `main.py` serves as the application entrypoint.
-- The CLI layer handles user interaction and command flow.
-- Domain modules encapsulate their own calculation logic.
+- Desktop CLI: Handles sequential user interaction and command flow in a terminal environment.
+- Embedded Pico: Implements a manual State Machine within the pico_calculator module to manage keypad polling, numeric buffering, and real-time OLED rendering for handheld use.
+- Domain Modules: Encapsulate pure calculation logic, independent of the user interface.
 
 This separation enables:
 
-- Future CLI argument parsing
-- Web application integration
-- Mobile deployment
-- Scalable domain expansion
-
----
+- Cross-platform deployment (Desktop vs. Handheld).
+- Scalable domain expansion without hardware dependencies.
+- Decoupling of physical I/O from mathematical formulas.
 
 ## Running the Application
 
-From the project root in your terminal:
+### For running the CLI Application in terminal run
 
 ```bash
 python3 main.py
 ```
+### For Pico Hardware
 
----
+> [!NOTE]
+> Pico Hardware is currently in the early development stages, with a successful implementation of the area of rectangle calculation.
+
+1. Flash `MicroPython` to the Raspberry Pi Pico W.
+2. Upload the `pico_calculator/` directory and `pico_main.py` to the device.
+3. The device will boot into the hardware-specific state logic.
 
 ## Roadmap
 
-- Add argparse support for CLI arguments
-- Expand supported formulas
+- Add all CLI calculators to Pico 
+- Expand supported formulas for all environments (Terminal, Pico, Web)
 - Introduce additional domains (electrical, thermodynamics, etc.)
 - Expand unit conversion support
 - Add test coverage
-
----
 
 ## Purpose
 
