@@ -1,10 +1,10 @@
 from machine import Pin, I2C
-import pico_calc.sh1106
+import pico_calc.drivers.sh1106
 import time
 class OLEDDisplay:
     def __init__(self, sda_pin=0, scl_pin=1):
         self.i2c = I2C(0, sda=Pin(sda_pin), scl=Pin(scl_pin), freq=400000)
-        self.oled = pico_calc.sh1106.SH1106_I2C(128, 64, self.i2c, addr=0x3c)
+        self.oled = pico_calc.drivers.sh1106.SH1106_I2C(128, 64, self.i2c, addr=0x3c)
         time.sleep(2)
         
         try:

@@ -1,4 +1,4 @@
-from pico_calc.oled_display import OLEDDisplay
+from pico_calc.pico_hardware.oled_display import OLEDDisplay
 import time
 
 oled_screen = OLEDDisplay(sda_pin=0, scl_pin=1)
@@ -23,8 +23,7 @@ class RectangleArea:
         self.unit_check = False
         self.unit_prompt_shown = False
         self.unit = "ft"
-        
-
+    
     def inches_to_feet(self, value):
         return value / 12
 
@@ -36,13 +35,15 @@ class RectangleArea:
             oled_screen.update_input(title,label, buffer)
             keypad.update_screen(key)
             print(f"Length: {buffer}")
+
         if key is not None and not keypad.confirmed and not keypad.exit:
-            title = f"{self.calc_type} {self.shape}"
-            label = "ENTER Length"
-            buffer = keypad.buffer
-            oled_screen.update_input(title,label, buffer)
-            self.length = float(keypad.buffer)
-            print(f"Length: {buffer}")
+            if key.isdigit():
+                title = f"{self.calc_type} {self.shape}"
+                label = "ENTER Length"
+                buffer = keypad.buffer
+                oled_screen.update_input(title,label, buffer)
+                self.length = float(keypad.buffer)
+                print(f"Length: {buffer}")
             
         elif keypad.confirmed and not self.unit_prompt_shown:
             title = "LENGTH UNIT"
@@ -51,8 +52,7 @@ class RectangleArea:
             oled_screen.update_input(title,label, buffer)
             self.unit_prompt_shown = True
             print("Get length unit check")
-            print(keypad.confirmed)
-            
+        
         elif keypad.confirmed and not self.unit_check:
             unit_choice = ["in", "ft"]
             print(key)
@@ -61,7 +61,6 @@ class RectangleArea:
                 self.unit_check = True
                 self.length_ft_label = f"Len: {self.length_ft:,.3g} {unit_choice[1]}"
                 print(f"Length: {self.length_ft:,.3g} {unit_choice[1]}")
-        
 
             elif key == "2":
                 self.length_ft = self.length
@@ -74,6 +73,7 @@ class RectangleArea:
             keypad.confirmed = False
             self.unit_check = False
             self.unit_prompt_shown = False
+            self.initialize = False
             self.state = "GET WIDTH"
             print("Length complete")
             return
@@ -89,13 +89,14 @@ class RectangleArea:
             print("Width: {buffer}")
             
         if key is not None and not keypad.confirmed:
-            title = f"{self.calc_type} {self.shape}"
-            label_one =f"{self.length_ft_label}"
-            lable_two = "ENTER Width"
-            buffer = keypad.buffer
-            oled_screen.update_input_double_label(title, label_one, lable_two, buffer)
-            self.width = float(keypad.buffer)
-            print("Width: {buffer}")
+            if key.isdigit():
+                title = f"{self.calc_type} {self.shape}"
+                label_one =f"{self.length_ft_label}"
+                lable_two = "ENTER Width"
+                buffer = keypad.buffer
+                oled_screen.update_input_double_label(title, label_one, lable_two, buffer)
+                self.width = float(keypad.buffer)
+                print("Width: {buffer}")
             
         elif keypad.confirmed and not self.unit_prompt_shown:
             title = "WIDTH UNIT"
@@ -201,8 +202,6 @@ class RectangleArea:
                 oled.shutdown_sequence()
         
                 
-            
-                                         
                                          
         
         
