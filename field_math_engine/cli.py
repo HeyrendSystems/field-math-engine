@@ -27,7 +27,6 @@ from field_math_engine.constants import (
     SECONDS_IN_MINUTES,
     MINUTES_IN_DAY,
     MINUTES_IN_HOUR,
-    PSI_TO_FT_HEAD,
 )
 
 
