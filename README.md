@@ -26,27 +26,34 @@ The system is designed so that new computational domains can be added without mo
 ```text
 .
 ├── field_math_engine/
+│   ├── __init__.py
 │   ├── cli.py
 │   ├── constants.py
-│   ├── unit_helpers.py
 │   ├── geometry/
+│   │   ├── __init__.py
 │   │   ├── area.py
 │   │   ├── input_helpers.py
 │   │   └── volume.py
-│   └── hydraulics/
-│       ├── flow.py
-│       ├── pump_horsepower.py
-│       ├── tdh.py
-│       └── velocity.py
+│   ├── hydraulics/
+│   │   ├── flow.py
+│   │   ├── pump_horsepower.py
+│   │   ├── tdh.py
+│   │   └── velocity.py
+│   └── unit_helpers.py
 ├── pico_calculator/
-│   ├── keypad_input.py
+│   ├── __init__.py
+│   ├── drivers/
+│   │   ├── sh1106.py
+│   │   └── ssd1306.py
+│   ├── geometry/
+│   │   └── pico_area.py
 │   ├── main_menu.py
-│   ├── oled_display.py
-│   ├── pico_area.py
-│   └── sh1106.py
+│   └── pico_hardware/
+│       ├── keypad_input.py
+│       └── oled_display.py
+├── LICENSE
 ├── main.py
 ├── pico_main.py
-├── LICENSE
 └── README.md
 ```
 ## Architecture Philosophy
