@@ -1,14 +1,10 @@
 from pico_calc.pico_hardware.oled_display import OLEDDisplay
 from pico_calc.pico_hardware.keypad_input import KeypadInput
-from pico_calc.geometry.pico_area import RectangleArea
-display = OLEDDisplay(sda_pin=0, scl_pin=1)
-
-area = RectangleArea()
-oled= OLEDDisplay(sda_pin=0, scl_pin=1)
+from pico_calc.geometry.pico_area import Area
 
 class MainMenu:
-    def __init__(self, display):
-        self.display = display
+    def __init__(self, oled):
+        self.display = oled
         self.menu_items = []
         self.index = 0
         self.state = "MENU"
@@ -62,7 +58,7 @@ class MainMenu:
             self.refresh_check = False
             self.state = "VOLUME"
             
-    def area_menu(self, key, keypad, oled):
+    def area_menu(self, key, keypad, oled, area):
         if not self.refresh_check:
             self.state_check()
             self.refresh_display()
@@ -73,13 +69,18 @@ class MainMenu:
         if key == "#" and keypad.confirmed and self.index == 0:
             keypad.confirmed = False
             self.refresh_check = False
+            area.state = "GET LENGTH"
+            area.shape = "Rectangle"
             self.state = "RECTANGLE"
+           
 
                 
         elif key == "#" and keypad.confirmed and self.index == 1:
             keypad.confirmed = False
             self.refresh_check = False
             self.state = "CIRCLE"
+            area.state = "GET DIAMETER"
+            area.shape = "Circle"
         
         
         

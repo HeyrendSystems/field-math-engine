@@ -1,6 +1,7 @@
 from machine import Pin, I2C
 import pico_calc.drivers.sh1106
 import time
+
 class OLEDDisplay:
     def __init__(self, sda_pin=0, scl_pin=1):
         self.i2c = I2C(0, sda=Pin(sda_pin), scl=Pin(scl_pin), freq=400000)
