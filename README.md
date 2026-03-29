@@ -80,7 +80,7 @@ python3 main.py
 ### For Pico Hardware
 
 > [!NOTE]
-> Pico Hardware is currently in the early development stages, with a successful implementation of the area of rectangle calculation.
+> Pico hardware is currently in the early development stage, with a successful implementation of the area calculation for rectangles and circles.
 
 1. Flash `MicroPython` to the Raspberry Pi Pico W.
 2. Upload the `pico_calculator/` directory and `pico_main.py` to the device.
