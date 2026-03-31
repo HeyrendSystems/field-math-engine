@@ -80,7 +80,7 @@ python3 main.py
 ### For Pico Hardware
 
 > [!NOTE]
-> Pico hardware is currently in the early development stage, with a successful implementation of the area calculation for rectangles and circles.
+> The area module has been completed. Additional area calculations may be added in the future. Development is now focused on expanding the calculator with new domains such as volume and other engineering calculations.
 
 1. Flash `MicroPython` to the Raspberry Pi Pico W.
 2. Upload the `pico_calculator/` directory and `pico_main.py` to the device.
