@@ -8,10 +8,10 @@ class MainMenu:
     def __init__(self, oled):
         self.display = oled
         self.menu_items = []
-        self.index = 0
         self.state = "MENU"
         self.title = ""
         self.refresh_check = False
+        self.index = 0
 
     def state_check(self):
         if self.state == "MENU":
@@ -41,13 +41,32 @@ class MainMenu:
         if key == "#":
             keypad.confirmed = True
             return
-
+        print(f"value {value}")
+        print(f"index {self.index}")
     def refresh_display(self):
+        max_list_display = 4
         self.display.oled.fill(0)
         self.display.oled.text(str(self.title), 0, 0)
         self.display.oled.hline(0, 10, 128, 1)
-        self.display.oled.write_list(self.menu_items, selected_index=self.index)
+
+        for index, item in enumerate(self.menu_items):
+
+            if self.index < max_list_display:
+                  self.display.oled.write_list(self.menu_items[0:max_list_display], selected_index=self.index)
+
+            if self.index < max_list_display:
+                self.display.oled.write_list(self.menu_items[0:max_list_display], selected_index=self.index)
+
+            elif self.index >= max_list_display:
+
+                self.display.oled.write_list(self.menu_items[max_list_display:], selected_index=self.index - max_list_display)
+
+
+
+
         self.display.oled.show()
+
+
 
     def main_menu(self, key, keypad, oled):
         if not self.refresh_check:
