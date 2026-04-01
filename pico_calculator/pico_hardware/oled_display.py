@@ -29,6 +29,13 @@ class OLEDDisplay:
         self.oled.text(value, 0, 40)
         self.oled.show()
 
+    def update_one_label(self,title, label):
+        self.oled.fill(0)
+        self.oled.text(title, 0, 0)
+        self.oled.hline(0, 10, 128, 1)
+        self.oled.text(label + ":", 0, 25)
+        self.oled.show()
+
     def update_input_three_label(self,title, label_one, label_two, label_three):
         self.oled.fill(0)
         self.oled.text(title, 0, 0)

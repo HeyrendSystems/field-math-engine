@@ -8,6 +8,7 @@ class Area:
         self.reset()
 
     def reset(self):
+        self.area = None
         self.calc_type = "Area"
         self.label_one = None
         self.label_two = None
@@ -421,7 +422,7 @@ class Area:
             self.unit_prompt_shown = False
             self.initialize = False
             self.buffer_check = False
-            self.state = f"GET {self.shape} SEMI MINOR AXIS"
+            self.state = f"GET SEMI MINOR AXIS"
             print(f"Semi Major Axis {self.shape} complete")
             print(self.state)
             return
@@ -513,13 +514,13 @@ class Area:
             if key == "1":
                 self.outside_diameter = float(self.inches_to_feet(self.outside_diameter))
                 self.unit_check = True
-                self.outside_diameter_ft_label = f"Outside Diameter: {self.outside_diameter:,.3g} {unit_choice[1]}"
-                print(f"Outside Diameter: {self.outside_diameter:,.3g} {unit_choice[1]}")
+                self.outside_diameter_ft_label = f"Outside D: {self.outside_diameter:,.3g} {unit_choice[1]}"
+                print(f"Outside D: {self.outside_diameter:,.3g} {unit_choice[1]}")
 
             elif key == "2":
                 self.unit_check = True
-                self.outside_diameter_ft_label = f"Outside Diameter: {self.outside_diameter:,.3g} {unit_choice[1]}"
-                print(f"Outside Diameter: {self.outside_diameter:,.3g} {unit_choice[1]}")
+                self.outside_diameter_ft_label = f"Outside D: {self.outside_diameter:,.3g} {unit_choice[1]}"
+                print(f"Outside D: {self.outside_diameter:,.3g} {unit_choice[1]}")
 
         elif self.unit_check:
             keypad.buffer = ""
@@ -566,8 +567,8 @@ class Area:
             if key == "1":
                 self.inside_diameter = float(self.inches_to_feet(self.inside_diameter))
                 self.unit_check = True
-                self.inside_diameter_ft_label = f"Inside Diameter: {self.inside_diameter:,.3g} {unit_choice[1]}"
-                print(f"Inside Diameter: {self.inside_diameter:,.3g} {unit_choice[1]}")
+                self.inside_diameter_ft_label = f"Inside D: {self.inside_diameter:,.3g} {unit_choice[1]}"
+                print(f"Inside D: {self.inside_diameter:,.3g} {unit_choice[1]}")
 
             elif key == "2":
                 self.unit_check = True
@@ -621,82 +622,79 @@ class Area:
     def handle_final_units(self, key, keypad, menu, oled):
         unit_dict = { "1":"ft sq", "2": "in sq"}
         print(self.shape)
-        if self.shape == "Rectangle" and not self.unit_prompt_shown:
+        if not self.unit_prompt_shown:
             title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.length_ft_label}"
-            label_three = f"{self.width_ft_label}"
-            oled.update_input_three_label(title, label_one, label_two, label_three)
-            self.unit_prompt_shown = True
-        elif self.shape == "Circle" and not self.unit_prompt_shown:
-            title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.diameter_ft_label}"
-            label_three = ""
-            oled.update_input_three_label(title, label_one, label_two, label_three)
-            self.unit_prompt_shown = True
-        elif self.shape == "Trapezoid" and not self.unit_prompt_shown:
-            title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.base_one_ft_label}"
-            label_three = f"{self.base_two_ft_label}"
-            label_four = f"{self.height_ft_label}"
-            oled.update_input_four_labels(title, label_one, label_two, label_three, label_four)
-            self.unit_prompt_shown = True
-        elif self.shape == "Triangle" and not self.unit_prompt_shown:
-            title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.base_one_ft_label}"
-            label_three = f"{self.height_ft_label}"
-            oled.update_input_three_label(title, label_one, label_two, label_three)
-            self.unit_prompt_shown = True
-
-        elif self.shape == "Ellipse" and not self.unit_prompt_shown:
-            title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.semi_major_axis_ft_label}"
-            label_three = f"{self.semi_minor_axis_ft_label}"
-            oled.update_input_three_label(title, label_one, label_two, label_three)
-            self.unit_prompt_shown = True
-
-        elif self.shape == "Annulus" and not self.unit_prompt_shown:
-            title = f"Final Area Units"
-            label_one = f"[1=ft sq, 2=in sq]"
-            label_two = f"{self.outside_diameter_ft_label}"
-            label_three = f"{self.inside_diameter_ft_label}"
-            oled.update_input_three_label(title, label_one, label_two, label_three)
+            label = f"[1=ft sq, 2=in sq]"
+            oled.update_one_label(title, label)
             self.unit_prompt_shown = True
 
         if not self.unit_check:
             if key == "1":
                 self.choice = "1"
+                self.area = self.area_ft_sq
                 self.unit_check = True
             elif key == "2":
-                self.area_in_sq = float(self.area_ft_sq * 144)
                 self.choice = "2"
+                self.area_in_sq = float(self.area_ft_sq * 144)
+                self.area = self.area_in_sq
                 self.unit_check = True
 
-        elif self.unit_check and self.choice == "1":
+        elif self.unit_check and self.shape == "Rectangle":
                 title = "Area Results"
-                label =f"{self.area_ft_sq:.5g} {unit_dict[self.choice]}"
-                label_two = "[A=EXIT B=CONT.]"
-                oled.update_input(title, label, label_two)
-                if key == "A":
-                    self.state = "EXIT CALCULATOR"
-                elif key == "B":
-                    self.reset()
-                    menu.state = "MENU"
+                label =f"{self.length_ft_label}"
+                label_two = f"{self.width_ft_label}"
+                label_three = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                label_four = "[A=EXIT B=CONT.]"
+                oled.update_input_four_labels(title, label, label_two, label_three, label_four)
 
-        elif self.unit_check and self.choice == "2":
+        elif self.unit_check and self.shape == "Circle":
                 title = "Area Results"
-                label = f"{self.area_in_sq:.5g} {unit_dict[self.choice]}"
-                label_two = "[A=EXIT B=CONT.]"
-                oled.update_input(title, label, label_two)
-                if key == "A":
-                    self.state = "EXIT CALCULATOR"
-                elif key == "B":
-                    self.reset()
-                    menu.state = "MENU"
+                label = f"{self.diameter_ft_label}"
+                label_two = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                label_three = "[A=EXIT B=CONT.]"
+                oled.update_input_three_label(title, label, label_two, label_three)
+
+        elif self.unit_check and self.shape == "Trapezoid":
+                title = "Area Results"
+                label = f"{self.base_one_ft_label}"
+                label_two = f"{self.base_two_ft_label}"
+                label_three = f"{self.height_ft_label}"
+                label_four = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                #label_five = "[A=EXIT B=CONT.]" add this in the future when OLED is larger
+                oled.update_input_four_labels(title, label, label_two, label_three, label_four)
+
+        elif self.unit_check and self.shape == "Triangle":
+                title = "Area Results"
+                label = f"{self.base_one_ft_label}"
+                label_two = f"{self.height_ft_label}"
+                label_three = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                label_four = "[A=EXIT B=CONT.]"
+                oled.update_input_four_labels(title, label, label_two, label_three, label_four)
+
+        elif self.unit_check and self.shape == "Ellipse":
+                title = "Area Results"
+                label = f"{self.semi_major_axis_ft_label}"
+                label_two = f"{self.semi_minor_axis_ft_label}"
+                label_three = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                label_four = "[A=EXIT B=CONT.]"
+                oled.update_input_four_labels(title, label, label_two, label_three, label_four)
+
+        elif self.unit_check and self.shape == "Annulus":
+                title = "Area Results"
+                label = f"{self.outside_diameter_ft_label}"
+                label_two = f"{self.inside_diameter_ft_label}"
+                label_three = f"Area: {self.area:.5g} {unit_dict[self.choice]}"
+                label_four = "[A=EXIT B=CONT.]"
+                oled.update_input_four_labels(title, label, label_two, label_three, label_four)
+
+
+        if key == "A" and self.unit_check:
+            self.state = "EXIT CALCULATOR"
+        elif key == "B" and self.unit_check:
+            self.reset()
+            menu.state = "MENU"
+
+
 
 
     # RUN Rectanlge Calc
